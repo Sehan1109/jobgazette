@@ -1,9 +1,9 @@
-// src/app/api/auth/[...nextauth]/route.ts
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "../../../lib/db";
 import User from "../../../models/User";
 import bcrypt from "bcryptjs";
+import { NextRequest } from "next/server";
 
 const handler = NextAuth({
     session: { strategy: "jwt" },
@@ -16,14 +16,23 @@ const handler = NextAuth({
             },
             async authorize(credentials) {
                 await connectDB();
-                const user = await User.findOne({ email: credentials?.email });
 
+                const user = await User.findOne({ email: credentials?.email });
                 if (!user) throw new Error("No user found!");
 
-                const isValid = await bcrypt.compare(credentials!.password, user.password);
+                const isValid = await bcrypt.compare(
+                    credentials!.password,
+                    user.password
+                );
+
                 if (!isValid) throw new Error("Wrong password!");
 
-                return { id: user._id.toString(), name: user.name, email: user.email, role: user.role };
+                return {
+                    id: user._id.toString(),
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                };
             },
         }),
     ],
@@ -43,7 +52,14 @@ const handler = NextAuth({
             return session;
         },
     },
-    secret: process.env.NEXTAUTH_SECRET || "mysecret123", // .env file එකට දාගන්න
+    secret: process.env.NEXTAUTH_SECRET,
 });
 
-export { handler as GET, handler as POST };
+// ✅ wrap handler properly
+export async function GET(req: NextRequest, ctx: any) {
+    return handler(req, ctx);
+}
+
+export async function POST(req: NextRequest, ctx: any) {
+    return handler(req, ctx);
+}
