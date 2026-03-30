@@ -1,16 +1,15 @@
-// src/app/api/jobs/[id]/route.ts
 import connectDB from "../../../lib/db";
 import Job from "../../../models/Job";
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
 export async function GET(
-    request: NextRequest,
-    context: { params: Promise<{ id: string }> }
+    request: Request,
+    context: any // ✅ IMPORTANT: let Next.js handle types
 ) {
     try {
         await connectDB();
 
-        const { id } = await context.params; // ✅ MUST await
+        const { id } = await context.params;
         const job = await Job.findById(id);
 
         if (!job) {
