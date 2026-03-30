@@ -1,24 +1,24 @@
 import connectDB from "../../../lib/db";
 import Job from "../../../models/Job";
-import { NextResponse } from "next/server";
 
 export async function GET(
-    request: Request,
-    context: any // ✅ IMPORTANT: let Next.js handle types
+    req: Request,
+    ctx: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectDB();
 
-        const { id } = await context.params;
+        const { id } = await ctx.params;
+
         const job = await Job.findById(id);
 
         if (!job) {
-            return NextResponse.json({ error: "Job not found" }, { status: 404 });
+            return Response.json({ error: "Job not found" }, { status: 404 });
         }
 
-        return NextResponse.json(job);
+        return Response.json(job);
     } catch (error) {
-        return NextResponse.json(
+        return Response.json(
             { error: "Internal Server Error" },
             { status: 500 }
         );
