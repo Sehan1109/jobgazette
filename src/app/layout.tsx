@@ -6,9 +6,11 @@ import "@fontsource/space-grotesk/700.css";
 import "@fontsource/inter/400.css";
 import "@fontsource/inter/600.css";
 import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "FutureJobs LK",
+  title: "Job Gazette LK",
   description: "Find your next career opportunity.",
 };
 
@@ -20,9 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark"> {/* Dark mode enable කරන්න */}
       {/* අලුත් ෆොන්ට්ස් සහ පසුබිම සකස් කිරීම */}
-      <body className="font-body bg-futuristic-bg text-gray-200 min-h-screen selection:bg-neon-blue selection:text-black">
-        {children}
-      </body>
+      <Providers>
+        <Navbar />
+        <body className="font-body bg-futuristic-bg text-gray-200 min-h-screen selection:bg-neon-blue selection:text-black">
+          {children}
+        </body>
+      </Providers>
     </html>
   );
 }

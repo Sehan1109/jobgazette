@@ -6,11 +6,12 @@ import { NextResponse } from "next/server";
 // තනි Job එකක් ID එකෙන් හොයන්න
 export async function GET(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectDB();
-        const job = await Job.findById(params.id);
+        const { id } = await params;
+        const job = await Job.findById(id);
 
         if (!job) {
             return NextResponse.json({ error: "Job not found" }, { status: 404 });
