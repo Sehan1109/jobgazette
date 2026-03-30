@@ -1,18 +1,16 @@
 // src/app/api/jobs/[id]/route.ts
 import connectDB from "../../../lib/db";
 import Job from "../../../models/Job";
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
-// තනි Job එකක් ID එකෙන් හොයන්න
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
         await connectDB();
 
-        const { id } = params; // ❌ await නැතුව
+        const { id } = await context.params; // ✅ MUST await
         const job = await Job.findById(id);
 
         if (!job) {
@@ -21,6 +19,9 @@ export async function GET(
 
         return NextResponse.json(job);
     } catch (error) {
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }
