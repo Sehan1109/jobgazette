@@ -22,12 +22,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark"> {/* Dark mode enable කරන්න */}
       {/* අලුත් ෆොන්ට්ස් සහ පසුබිම සකස් කිරීම */}
-      <Providers>
-        <Navbar />
-        <body className="font-body bg-futuristic-bg text-gray-200 min-h-screen selection:bg-neon-blue selection:text-black">
+      <body className="font-body bg-futuristic-bg text-gray-200 min-h-screen selection:bg-neon-blue selection:text-black">
+        <Providers>
+          <Navbar />
           {children}
-        </body>
-      </Providers>
+        </Providers>
+      </body>
     </html>
   );
 }

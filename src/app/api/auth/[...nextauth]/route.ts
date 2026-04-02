@@ -1,11 +1,10 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import connectDB from "../../../lib/db";
 import User from "../../../models/User";
 import bcrypt from "bcryptjs";
-import { NextRequest } from "next/server";
 
-const handler = NextAuth({
+export const authOptions: NextAuthOptions = {
     session: { strategy: "jwt" },
     providers: [
         CredentialsProvider({
@@ -17,11 +16,15 @@ const handler = NextAuth({
             async authorize(credentials) {
                 await connectDB();
 
-                const user = await User.findOne({ email: credentials?.email });
+                if (!credentials?.email || !credentials?.password) {
+                    throw new Error("Email and password are required");
+                }
+
+                const user = await User.findOne({ email: credentials.email });
                 if (!user) throw new Error("No user found!");
 
                 const isValid = await bcrypt.compare(
-                    credentials!.password,
+                    credentials.password,
                     user.password
                 );
 
@@ -53,13 +56,12 @@ const handler = NextAuth({
         },
     },
     secret: process.env.NEXTAUTH_SECRET,
-});
+    // Optional: Add custom pages if needed
+    pages: {
+        signIn: "/login",
+    },
+};
 
-// ✅ wrap handler properly
-export async function GET(req: NextRequest, ctx: any) {
-    return handler(req, ctx);
-}
+const handler = NextAuth(authOptions);
 
-export async function POST(req: NextRequest, ctx: any) {
-    return handler(req, ctx);
-}
+export { handler as GET, handler as POST };
